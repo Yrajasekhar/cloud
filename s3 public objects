@@ -1,0 +1,90 @@
+// CONTENTS	
+Creating a New S3 Bucket to be Public
+How to Make an S3 Bucket Public
+Making Everything in the S3 Bucket Publicly Accessible
+How to Find the S3 Bucket URL & the URL for an Individual Object
+How to Find an Amazon S3 Bucket Endpoint
+
+
+If you’re using an Amazon S3 bucket to share files with anyone else, you’ll first need to make those files public. Maybe you’re sending download links to someone, or perhaps you’re using S3 for static files for your website or as a content delivery network (CDN). But if you don’t make the files public, your users will get an XML Access Denied error message saying the file is unavailable.
+It’s relatively straightforward to make S3 buckets public, but it’s not necessarily self-evident how to do it. It has also changed from an older method.
+
+I’m focusing here on making an entire bucket and all of its contents public. So before you make the changes, please be sure that you don’t have any files in there that you don’t want accessible to just anyone on the internet. It is quite possible to make individual files (or objects) public on a file-by-file basis; I’ll cover that further down this page.
+
+But for situations where you don’t want to be messing with permissions for each individual file–say, if you’re using an S3 bucket to share photos from a whole shoot with clients or as the storage source for your website’s CDN–you can also make the entire bucket publicly accessible. That includes all of its existing contents and any new files uploaded to it. So a bit advantage of doing it this way is that it will apply to all files you add to the bucket in the future as well. Which means you should only have to do this once per bucket.
+
+There are also multiple ways to handle the issue. While this is among the quickest, it’s not the only method and not even necessarily the best for all uses. A more secure and more precise way to do it is through using the AWS ACL tools, but that method can be potentially more complicated.
+
+*Creating a New S3 Bucket to be Public
+When you create a new bucket, there’s a new step-by-step process that is much more user-friendly than the old version.
+
+Step 3 in that process is Set permissions. By default, new buckets are set to Block all public access. You can uncheck that option.
+
+How to Make an S3 Bucket Public
+Here’s how to do it for one S3 bucket at a time.
+
+1. Sign in to Amazon Web Services and go to your S3 Management Console.
+
+2. Click on the name of the S3 bucket from the list. If it’s still in its default access state, it should say “Buckets and objects not public” next to it.
+
+3. Go to the Permissions tab. The first sub-tab, which is open by default, is Block Public Access, and the “Block all public access* option will be On. Click on the Edit button at right.
+
+4. Uncheck the “Block all public access” option, and then click the Save button.
+
+You’ll then be asked to confirm the change but typing in the word “confirm”.
+
+*Making Everything in the S3 Bucket Publicly Accessible
+If you go back to the S3 buckets list, you’ll see that the Access for that bucket has now been changed to “Objects can be public.”
+And that’s where the official Amazon instructions stop.
+But I’m guessing that the reason you’re here is that you’ve discovered that doesn’t actually make the entire bucket public.
+If you try to read the files now through a web browser, for instance, you’ll still get the Access Denied error.
+
+So we can take it a step further and make an entire bucket, all of its existing contents, and any new files uploaded to it, publicly accessible.
+
+But before proceeding, know that Amazon discourages granting public access to an S3 bucket and will show you a warning to that effect when you save the Bucket Policy below.
+If you proceed, this is going to make all the bucket’s contents available to anyone with an internet connection to read and download.
+
+1. From the bucket list, click on the bucket name again. Select the Permissions tab again, but this time go to the Bucket Policy sub-item. This opens the Bucket Policy Editor.
+
+2. Copy and paste this code in the Bucket Policy Editor entry area. You’ll need to replace “YOUR-BUCKET-NAME” with your full bucket name.
+
+{"Version": "2008-10-17",
+"Statement": [{"Sid": "AllowPublicRead",
+"Effect": "Allow",
+"Principal": {
+"AWS": "*"
+},
+"Action": "s3:GetObject",
+"Resource": "arn:aws:s3:::YOUR-BUCKET-NAME/*"
+}]}
+
+As an example, if your bucket is named “havecamerawilltravel.developer”, as in the example I’m using here, it should look like the screen grab below.
+
+When you click Save, you’ll get a warning:
+
+If you want to heed that warning and remove the public access, you can use the Delete button above the input area.
+
+Now, when you go back to the bucket list, you’ll see that the entry in the access column has changed to public.
+
+*How to Find the S3 Bucket URL & the URL for an Individual Object
+There are a number of ways to share the contents of the bucket, from an individual URL for an individual object through making the bucket available to host a static website on a custom domain.
+
+If you’re looking to quickly share the URL of a specific S3 object, here’s one way to find the link:
+
+1. From the bucket list, click on the name of the bucket. Then choose Overview tab for a list of the files in the bucket.
+2. Use the search bar to locate the file, if necessary. Then click to the right of the file name, but not actually on the file name (that will open something different).
+3. From the slide-out panel, you can find the file’s endpoint using the Object URL field.
+4. You can then send that link to others to download or open.
+
+*How to Find an Amazon S3 Bucket Endpoint
+Some applications, such as plugins for website platforms or backups apps, might ask for your bucket’s endpoint. That’s the location displayed in a standard URL format (as opposed to a local path, for instance). It’s also sometimes called the S3 URL.
+
+Here’s a quick way to find the endpoint URL.
+
+1. Click on the bucket name from the list of S3 buckets.
+
+2. Go to the Properties tab.
+
+3. Click on the Static Website Hosting card. The first bit of information on the card is the endpoint address.
+
+If you’re going to set up the bucket to host a static website, there’s more to it. You can find Amazon’s instructions on the rest of that process here.
